@@ -1,0 +1,62 @@
+name: Test, Package & Publish
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      publish_open_vsx:
+        description: 'Publish .vsix to Open VSX (requires OVSX_PAT secret)'
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Syntax check & unit tests
+        run: |
+          for f in src/*.js; do node --check "$f"; done
+          node test/run_tests.js
+
+      - name: Build VSIX package
+        id: build
+        run: |
+          python scripts/build_vsix.py
+          VSIX_FILE=$(ls -1 *.vsix | head -n 1)
+          echo "vsix_file=$VSIX_FILE" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release (on tag push)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.build.outputs.vsix_file }}
+          generate_release_notes: true
+
+      - name: Publish to Open VSX
+        if: ${{ github.event_name == 'push' || inputs.publish_open_vsx }}
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: |
+          if [ -z "$OVSX_PAT" ]; then
+            echo "::error::Missing OVSX_PAT secret. Add it in GitHub Repo -> Settings -> Secrets and variables -> Actions."
+            exit 1
+          fi
+          npx --yes ovsx publish "${{ steps.build.outputs.vsix_file }}" -p "$OVSX_PAT"
