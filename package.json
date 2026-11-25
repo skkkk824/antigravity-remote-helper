@@ -1,0 +1,232 @@
+{
+  "name": "antigravity-offline-ssh",
+  "displayName": "%ext.displayName%",
+  "description": "%ext.description%",
+  "version": "0.3.0",
+  "publisher": "skkkk824",
+  "license": "MIT",
+  "icon": "media/logo.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/skkkk824/antigravity-offline-ssh.git"
+  },
+  "homepage": "https://github.com/skkkk824/antigravity-offline-ssh#readme",
+  "bugs": {
+    "url": "https://github.com/skkkk824/antigravity-offline-ssh/issues"
+  },
+  "galleryBanner": {
+    "color": "#0F172A",
+    "theme": "dark"
+  },
+  "keywords": [
+    "antigravity",
+    "ssh",
+    "remote",
+    "offline",
+    "air-gapped",
+    "proxy",
+    "tunnel",
+    "agy"
+  ],
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "extensionKind": [
+    "ui"
+  ],
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./src/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "antigravityOfflineSsh",
+          "title": "%viewContainer.title%",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "antigravityOfflineSsh": [
+        {
+          "id": "antigravityOfflineSshHosts",
+          "name": "%view.hosts.name%"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "antigravityOfflineSsh.deployAndConnect",
+        "title": "%cmd.deployAndConnect%",
+        "icon": "$(plug)"
+      },
+      {
+        "command": "antigravityOfflineSsh.deployAndConnectCurrentWindow",
+        "title": "%cmd.deployAndConnectCurrentWindow%",
+        "icon": "$(arrow-right)"
+      },
+      {
+        "command": "antigravityOfflineSsh.deployOnly",
+        "title": "%cmd.deployOnly%",
+        "icon": "$(cloud-upload)"
+      },
+      {
+        "command": "antigravityOfflineSsh.startTunnelForHost",
+        "title": "%cmd.startTunnelForHost%",
+        "icon": "$(radio-tower)"
+      },
+      {
+        "command": "antigravityOfflineSsh.stopTunnelForHost",
+        "title": "%cmd.stopTunnelForHost%",
+        "icon": "$(debug-disconnect)"
+      },
+      {
+        "command": "antigravityOfflineSsh.downloadCache",
+        "title": "%cmd.downloadCache%",
+        "icon": "$(cloud-download)"
+      },
+      {
+        "command": "antigravityOfflineSsh.clearCache",
+        "title": "%cmd.clearCache%",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "antigravityOfflineSsh.openSshConfig",
+        "title": "%cmd.openSshConfig%",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "antigravityOfflineSsh.refreshHosts",
+        "title": "%cmd.refreshHosts%",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "antigravityOfflineSsh.showLog",
+        "title": "%cmd.showLog%",
+        "icon": "$(output)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "antigravityOfflineSsh.deployAndConnect",
+          "when": "view == antigravityOfflineSshHosts",
+          "group": "navigation@1"
+        },
+        {
+          "command": "antigravityOfflineSsh.clearCache",
+          "when": "view == antigravityOfflineSshHosts",
+          "group": "navigation@2"
+        },
+        {
+          "command": "antigravityOfflineSsh.openSshConfig",
+          "when": "view == antigravityOfflineSshHosts",
+          "group": "navigation@3"
+        },
+        {
+          "command": "antigravityOfflineSsh.refreshHosts",
+          "when": "view == antigravityOfflineSshHosts",
+          "group": "navigation@4"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "antigravityOfflineSsh.deployAndConnectCurrentWindow",
+          "when": "viewItem == sshHost || viewItem == sshHostTunneled",
+          "group": "inline@1"
+        },
+        {
+          "command": "antigravityOfflineSsh.deployAndConnect",
+          "when": "viewItem == sshHost || viewItem == sshHostTunneled",
+          "group": "inline@2"
+        },
+        {
+          "command": "antigravityOfflineSsh.deployOnly",
+          "when": "viewItem == sshHost || viewItem == sshHostTunneled",
+          "group": "1_actions@1"
+        },
+        {
+          "command": "antigravityOfflineSsh.startTunnelForHost",
+          "when": "viewItem == sshHost",
+          "group": "1_actions@2"
+        },
+        {
+          "command": "antigravityOfflineSsh.stopTunnelForHost",
+          "when": "viewItem == sshHostTunneled",
+          "group": "1_actions@2"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Antigravity Offline SSH",
+      "scope": "application",
+      "properties": {
+        "antigravityOfflineSsh.sshPath": {
+          "type": "string",
+          "default": "",
+          "scope": "application",
+          "description": "%cfg.sshPath%"
+        },
+        "antigravityOfflineSsh.scpPath": {
+          "type": "string",
+          "default": "",
+          "scope": "application",
+          "description": "%cfg.scpPath%"
+        },
+        "antigravityOfflineSsh.configFile": {
+          "type": "string",
+          "default": "",
+          "scope": "application",
+          "description": "%cfg.configFile%"
+        },
+        "antigravityOfflineSsh.proxyUrl": {
+          "type": "string",
+          "default": "",
+          "scope": "application",
+          "description": "%cfg.proxyUrl%"
+        },
+        "antigravityOfflineSsh.enableProxyTunnel": {
+          "type": "boolean",
+          "default": true,
+          "scope": "application",
+          "description": "%cfg.enableProxyTunnel%"
+        },
+        "antigravityOfflineSsh.enableTerminalProxy": {
+          "type": "boolean",
+          "default": true,
+          "scope": "application",
+          "description": "%cfg.enableTerminalProxy%"
+        },
+        "antigravityOfflineSsh.tunnelPort": {
+          "type": "number",
+          "default": 17891,
+          "scope": "application",
+          "description": "%cfg.tunnelPort%"
+        },
+        "antigravityOfflineSsh.deployAgyCli": {
+          "type": "boolean",
+          "default": true,
+          "scope": "application",
+          "description": "%cfg.deployAgyCli%"
+        },
+        "antigravityOfflineSsh.forceRedeploy": {
+          "type": "boolean",
+          "default": false,
+          "scope": "application",
+          "description": "%cfg.forceRedeploy%"
+        },
+        "antigravityOfflineSsh.connectTimeoutSeconds": {
+          "type": "number",
+          "default": 20,
+          "scope": "application",
+          "description": "%cfg.connectTimeoutSeconds%"
+        }
+      }
+    }
+  }
+}
