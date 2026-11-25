@@ -30,6 +30,7 @@ const {
 const {
   resolveSshTools,
   buildEndpointAndArgs,
+  isWindowsRemoteHostError,
   computeDesiredMachineSettings,
   stripJsonComments,
 } = require('../src/sshRunner');
@@ -254,6 +255,13 @@ async function main() {
       destination: 'root@10.1.130.53',
       args: ['-o', 'ConnectTimeout=15', '-P', '2222'],
     });
+    assert.strictEqual(
+      isWindowsRemoteHostError("'sh' is not recognized as an internal or external command", ''),
+      true
+    );
+    assert.strictEqual(isWindowsRemoteHostError("'sh' \uFFFD\uFFFD\uFFFD\uFFFD", ''), true);
+    assert.strictEqual(isWindowsRemoteHostError('Permission denied (publickey).', ''), false);
+    assert.throws(() => mapRemotePlatform('MINGW64_NT-10.0', 'x86_64'), /不支持 Windows 远程主机/);
 
     console.log('ALL V0.3.0 TESTS PASSED');
   } finally {

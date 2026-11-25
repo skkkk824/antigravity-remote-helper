@@ -61,7 +61,11 @@ function mapRemotePlatform(unameKernel, unameMachine) {
   let platform;
   if (kernel === 'Linux') platform = 'linux';
   else if (kernel === 'Darwin') platform = 'darwin';
-  else throw new Error(`Unsupported remote OS kernel: ${kernel}`);
+  else if (/^(MINGW|MSYS|CYGWIN|Windows)/i.test(kernel)) {
+    throw new Error(
+      '由于Antigravity IDE限制，不支持 Windows 远程主机 (Antigravity IDE does not support Windows as a remote SSH host; only Linux and macOS are supported).'
+    );
+  } else throw new Error(`Unsupported remote OS kernel: ${kernel}`);
 
   let serverArch;
   if (machine === 'x86_64' || machine === 'amd64') serverArch = 'x64';

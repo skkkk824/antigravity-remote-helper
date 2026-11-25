@@ -171,6 +171,21 @@ function buildEndpointAndArgs(target, configFile, timeoutSeconds, isScp) {
   return { destination, args };
 }
 
+const WINDOWS_UNSUPPORTED_MSG =
+  '由于Antigravity IDE限制，不支持 Windows 远程主机 (Antigravity IDE does not support Windows as a remote SSH host; only Linux and macOS are supported).';
+
+/**
+ * Detect when a remote SSH host is Windows (cmd.exe / PowerShell lacking `sh`).
+ */
+function isWindowsRemoteHostError(stderr, stdout) {
+  const combined = `${stderr || ''}\n${stdout || ''}`;
+  if (/'sh'\s+is not recognized/i.test(combined)) return true;
+  if (/The term 'sh' is not recognized/i.test(combined)) return true;
+  if (/'sh'.*(不是内部或外部命令|无法将|项识别为|\uFFFD)/i.test(combined)) return true;
+  if (/cmd\.exe|PowerShell/i.test(combined) && /\bsh\b/i.test(combined)) return true;
+  return false;
+}
+
 /**
  * Single SSH call to inspect remote OS, arch, HOME, IDE server, agy CLI, AND existing Machine/settings.json.
  */
@@ -219,6 +234,9 @@ async function probeRemoteHost({
   const args = [...commonArgs, '-T', destination, 'sh', '-s'];
   const res = await execBinary(sshPath, args, { env, stdinData: script + '\n' });
   if (res.code !== 0) {
+    if (isWindowsRemoteHostError(res.stderr, res.stdout)) {
+      throw new Error(WINDOWS_UNSUPPORTED_MSG);
+    }
     throw new Error(`SSH probe failed (exit ${res.code}): ${res.stderr.trim() || res.stdout.trim()}`);
   }
 
@@ -517,6 +535,7 @@ module.exports = {
   execBinary,
   buildEndpointAndArgs,
   createAskpassContext,
+  isWindowsRemoteHostError,
   probeRemoteHost,
   computeDesiredMachineSettings,
   applyRemoteDeployment,
