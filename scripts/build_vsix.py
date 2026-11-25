@@ -28,6 +28,14 @@ KEYWORDS = ",".join(PKG.get("keywords", []))
 BANNER_COLOR = PKG.get("galleryBanner", {}).get("color", "#0F172A")
 BANNER_THEME = PKG.get("galleryBanner", {}).get("theme", "dark")
 
+REPO_URL = PKG.get("repository", "")
+if isinstance(REPO_URL, dict):
+    REPO_URL = REPO_URL.get("url", "")
+HOMEPAGE_URL = PKG.get("homepage", "")
+BUGS_URL = PKG.get("bugs", "")
+if isinstance(BUGS_URL, dict):
+    BUGS_URL = BUGS_URL.get("url", "")
+
 OUT_VSIX = ROOT / f"{NAME}-{VERSION}.vsix"
 
 CONTENT_TYPES_XML = """<?xml version="1.0" encoding="utf-8"?>
@@ -59,6 +67,11 @@ MANIFEST_XML = f"""<?xml version="1.0" encoding="utf-8"?>
       <Property Id="Microsoft.VisualStudio.Code.LocalizedLanguages" Value="" />
       <Property Id="Microsoft.VisualStudio.Services.Branding.Color" Value="{escape(BANNER_COLOR)}" />
       <Property Id="Microsoft.VisualStudio.Services.Branding.Theme" Value="{escape(BANNER_THEME)}" />
+      <Property Id="Microsoft.VisualStudio.Services.Links.Source" Value="{escape(REPO_URL)}" />
+      <Property Id="Microsoft.VisualStudio.Services.Links.GitHub" Value="{escape(REPO_URL)}" />
+      <Property Id="Microsoft.VisualStudio.Services.Links.Getstarted" Value="{escape(REPO_URL)}" />
+      <Property Id="Microsoft.VisualStudio.Services.Links.Support" Value="{escape(BUGS_URL)}" />
+      <Property Id="Microsoft.VisualStudio.Services.Links.Learn" Value="{escape(HOMEPAGE_URL)}" />
     </Properties>
     <License>extension/LICENSE</License>
     <Icon>extension/media/logo.png</Icon>

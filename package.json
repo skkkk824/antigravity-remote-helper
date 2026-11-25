@@ -2,7 +2,7 @@
   "name": "antigravity-remote-helper",
   "displayName": "%ext.displayName%",
   "description": "%ext.description%",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "publisher": "skkkk824",
   "license": "MIT",
   "icon": "media/logo.png",
