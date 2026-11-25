@@ -1,4 +1,4 @@
-# Antigravity Offline SSH
+# Antigravity Remote Helper
 
 [English](#english) | [简体中文](#简体中文)
 
@@ -8,7 +8,7 @@
 
 ## English
 
-**Antigravity Offline SSH** enables seamless Remote-SSH development in **Antigravity IDE** when your remote Linux/macOS server has **no outbound internet access** (air-gapped, intranet, or firewalled environments).
+**Antigravity Remote Helper** enables seamless Remote-SSH development in **Antigravity IDE** when your remote Linux/macOS server has **no outbound internet access** (air-gapped, intranet, or firewalled environments).
 
 Unlike standard VS Code, Antigravity IDE's built-in SSH extension only attempts to download `Antigravity IDE-reh.tar.gz` directly from the remote host, and the remote `agy` AI backend also requires outbound internet to download `~/.gemini/bin/agy` and reach cloud AI APIs. This extension bridges both gaps automatically using your local machine's network.
 
@@ -28,7 +28,7 @@ Unlike standard VS Code, Antigravity IDE's built-in SSH extension only attempts 
 
 ### Quick Start
 
-1. Click the **Offline SSH** icon in the Activity Bar (or run `Offline SSH: Deploy Server & Connect` from the Command Palette `Ctrl+Shift+P` / `Cmd+Shift+P`).
+1. Click the **Remote Helper** icon in the Activity Bar (or run `Remote Helper: Deploy Server & Connect` from the Command Palette `Ctrl+Shift+P` / `Cmd+Shift+P`).
 2. Select a host from `~/.ssh/config` or enter `user@host` manually.
 3. The extension probes the remote host, downloads & caches any missing binaries locally, deploys them over SCP, configures the reverse proxy tunnel, and opens the remote SSH window.
 
@@ -36,16 +36,16 @@ Unlike standard VS Code, Antigravity IDE's built-in SSH extension only attempts 
 
 | Setting | Default | Description |
 | --- | --- | --- |
-| `antigravityOfflineSsh.enableProxyTunnel` | `true` | Start local proxy + `ssh -R` reverse tunnel for AGY AI features. |
-| `antigravityOfflineSsh.enableTerminalProxy` | `true` | Inject proxy env vars into IDE integrated terminals only (never modifies `~/.bashrc`). |
-| `antigravityOfflineSsh.tunnelPort` | `17891` | Loopback port used on both local PC and remote host. |
-| `antigravityOfflineSsh.deployAgyCli` | `true` | Download and deploy `~/.gemini/bin/agy` over SCP. |
-| `antigravityOfflineSsh.proxyUrl` | `""` | Optional upstream HTTP proxy on your local PC (leave empty for direct internet). |
-| `antigravityOfflineSsh.configFile` | `""` | Custom SSH config path (defaults to `remote.antigravitySSH.configFile` or `~/.ssh/config`). |
-| `antigravityOfflineSsh.sshPath` | `""` | Custom `ssh` executable path. |
-| `antigravityOfflineSsh.scpPath` | `""` | Custom `scp` executable path. |
-| `antigravityOfflineSsh.forceRedeploy` | `false` | Force re-upload even if binaries already exist on the remote host. |
-| `antigravityOfflineSsh.connectTimeoutSeconds` | `20` | SSH/SCP connection timeout in seconds. |
+| `antigravityRemoteHelper.enableProxyTunnel` | `true` | Start local proxy + `ssh -R` reverse tunnel for AGY AI features. |
+| `antigravityRemoteHelper.enableTerminalProxy` | `true` | Inject proxy env vars into IDE integrated terminals only (never modifies `~/.bashrc`). |
+| `antigravityRemoteHelper.tunnelPort` | `17891` | Loopback port used on both local PC and remote host. |
+| `antigravityRemoteHelper.deployAgyCli` | `true` | Download and deploy `~/.gemini/bin/agy` over SCP. |
+| `antigravityRemoteHelper.proxyUrl` | `""` | Optional upstream HTTP proxy on your local PC (leave empty for direct internet). |
+| `antigravityRemoteHelper.configFile` | `""` | Custom SSH config path (defaults to `remote.antigravitySSH.configFile` or `~/.ssh/config`). |
+| `antigravityRemoteHelper.sshPath` | `""` | Custom `ssh` executable path. |
+| `antigravityRemoteHelper.scpPath` | `""` | Custom `scp` executable path. |
+| `antigravityRemoteHelper.forceRedeploy` | `false` | Force re-upload even if binaries already exist on the remote host. |
+| `antigravityRemoteHelper.connectTimeoutSeconds` | `20` | SSH/SCP connection timeout in seconds. |
 
 ---
 
@@ -53,7 +53,7 @@ Unlike standard VS Code, Antigravity IDE's built-in SSH extension only attempts 
 
 ## 简体中文
 
-**Antigravity Offline SSH** 专为**无外网访问权限的远程服务器**（内网、离线、防火墙受限环境）设计，让 **Antigravity IDE** 的 Remote-SSH 连接、**AGY AI 面板 / 代码补全** 以及 **IDE 内置终端联网** 全部开箱即用。
+**Antigravity Remote Helper** 专为**无外网访问权限的远程服务器**（内网、离线、防火墙受限环境）设计，让 **Antigravity IDE** 的 Remote-SSH 连接、**AGY AI 面板 / 代码补全** 以及 **IDE 内置终端联网** 全部开箱即用。
 
 ### 解决什么问题？
 
@@ -70,6 +70,6 @@ Unlike standard VS Code, Antigravity IDE's built-in SSH extension only attempts 
 
 ### 使用方法
 
-1. 点击左侧活动栏 **Offline SSH** 图标（或按 `Ctrl+Shift+P` / `Cmd+Shift+P` 运行 `Offline SSH: Deploy Server & Connect`）。
+1. 点击左侧活动栏 **Remote Helper** 图标（或按 `Ctrl+Shift+P` / `Cmd+Shift+P` 运行 `Remote Helper: 部署服务端并连接`）。
 2. 选择 `~/.ssh/config` 中的主机或手动输入 `user@host`。
 3. 插件会自动完成探测、本地下载缓存、批量上传部署、代理隧道配置，并自动打开远程 SSH 窗口。

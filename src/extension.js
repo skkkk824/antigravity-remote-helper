@@ -77,7 +77,7 @@ class HostItem extends vscode.TreeItem {
       ? `${host.alias} — Reverse proxy tunnel active on 127.0.0.1:${tunnelPort}`
       : `Deploy IDE server + AGY CLI & connect to ${host.alias}`;
     this.command = {
-      command: 'antigravityOfflineSsh.deployAndConnect',
+      command: 'antigravityRemoteHelper.deployAndConnect',
       title: 'Deploy Server & Connect',
       arguments: [this],
     };
@@ -116,13 +116,13 @@ class OfflineSshHostsProvider {
 }
 
 function getEffectiveSshConfigPath() {
-  const cfg = vscode.workspace.getConfiguration('antigravityOfflineSsh');
+  const cfg = vscode.workspace.getConfiguration('antigravityRemoteHelper');
   const agyCfg = vscode.workspace.getConfiguration('remote.antigravitySSH');
   return resolveSshConfigPath(cfg.get('configFile'), agyCfg.get('configFile'));
 }
 
 function getSettings() {
-  const cfg = vscode.workspace.getConfiguration('antigravityOfflineSsh');
+  const cfg = vscode.workspace.getConfiguration('antigravityRemoteHelper');
   const agyCfg = vscode.workspace.getConfiguration('remote.antigravitySSH');
   const agyExpCfg = vscode.workspace.getConfiguration('remote.antigravitySSH.experimental');
   const agyCoreCfg = vscode.workspace.getConfiguration('antigravity');
@@ -193,14 +193,14 @@ function computeDirectorySizeBytes(dirPath) {
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-  const output = vscode.window.createOutputChannel('Antigravity Offline SSH');
+  const output = vscode.window.createOutputChannel('Antigravity Remote Helper');
   const log = (msg) => {
     const ts = new Date().toISOString();
     output.appendLine(`[${ts}] ${msg}`);
   };
 
   const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 10);
-  statusBar.command = 'antigravityOfflineSsh.deployAndConnect';
+  statusBar.command = 'antigravityRemoteHelper.deployAndConnect';
   statusBar.show();
 
   let hostsProvider;
@@ -218,10 +218,10 @@ function activate(context) {
     const count = tunnelManager.getActiveTunnelCount();
     const settings = getSettings();
     if (count > 0) {
-      statusBar.text = `$(radio-tower) Offline SSH (Tunnel :${settings.tunnelPort})`;
-      statusBar.tooltip = `Offline SSH active: local proxy 127.0.0.1:${settings.tunnelPort} forwarded to ${count} remote host(s)`;
+      statusBar.text = `$(radio-tower) Remote Helper (Tunnel :${settings.tunnelPort})`;
+      statusBar.tooltip = `Remote Helper active: local proxy 127.0.0.1:${settings.tunnelPort} forwarded to ${count} remote host(s)`;
     } else {
-      statusBar.text = '$(cloud-upload) Offline SSH';
+      statusBar.text = '$(cloud-upload) Remote Helper';
       statusBar.tooltip = 'Deploy Antigravity Server + AGY CLI locally & connect via SSH';
     }
   }
@@ -231,7 +231,7 @@ function activate(context) {
     output,
     statusBar,
     tunnelManager,
-    vscode.window.registerTreeDataProvider('antigravityOfflineSshHosts', hostsProvider)
+    vscode.window.registerTreeDataProvider('antigravityRemoteHelperHosts', hostsProvider)
   );
 
   async function rememberTunnelTarget(target) {
@@ -275,7 +275,7 @@ function activate(context) {
   context.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration((e) => {
       if (
-        e.affectsConfiguration('antigravityOfflineSsh') ||
+        e.affectsConfiguration('antigravityRemoteHelper') ||
         e.affectsConfiguration('remote.antigravitySSH')
       ) {
         hostsProvider.refresh();
@@ -463,7 +463,7 @@ function activate(context) {
       await vscode.window.withProgress(
         {
           location: vscode.ProgressLocation.Notification,
-          title: `Antigravity Offline SSH (${target})`,
+          title: `Antigravity Remote Helper (${target})`,
           cancellable: true,
         },
         async (progress, token) => {
@@ -607,7 +607,7 @@ function activate(context) {
       const msg = err && err.message ? err.message : String(err);
       log(`ERROR: ${msg}`);
       const action = await vscode.window.showErrorMessage(
-        `Offline SSH failed: ${msg}`,
+        `Remote Helper failed: ${msg}`,
         'Show Log'
       );
       if (action === 'Show Log') {
@@ -619,25 +619,25 @@ function activate(context) {
   }
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('antigravityOfflineSsh.deployAndConnect', async (item) => {
+    vscode.commands.registerCommand('antigravityRemoteHelper.deployAndConnect', async (item) => {
       const target = await pickTargetHost(item);
       if (!target) return;
       await runDeployFlow(target, { connectAfter: true, reuseWindow: false });
     }),
     vscode.commands.registerCommand(
-      'antigravityOfflineSsh.deployAndConnectCurrentWindow',
+      'antigravityRemoteHelper.deployAndConnectCurrentWindow',
       async (item) => {
         const target = await pickTargetHost(item);
         if (!target) return;
         await runDeployFlow(target, { connectAfter: true, reuseWindow: true });
       }
     ),
-    vscode.commands.registerCommand('antigravityOfflineSsh.deployOnly', async (item) => {
+    vscode.commands.registerCommand('antigravityRemoteHelper.deployOnly', async (item) => {
       const target = await pickTargetHost(item);
       if (!target) return;
       await runDeployFlow(target, { connectAfter: false, reuseWindow: false });
     }),
-    vscode.commands.registerCommand('antigravityOfflineSsh.startTunnelForHost', async (item) => {
+    vscode.commands.registerCommand('antigravityRemoteHelper.startTunnelForHost', async (item) => {
       const target = await pickTargetHost(item);
       if (!target) return;
       const settings = getSettings();
@@ -654,17 +654,17 @@ function activate(context) {
         `Started local proxy & SSH reverse tunnel (127.0.0.1:${settings.tunnelPort}) for ${target}.`
       );
     }),
-    vscode.commands.registerCommand('antigravityOfflineSsh.stopTunnelForHost', async (item) => {
+    vscode.commands.registerCommand('antigravityRemoteHelper.stopTunnelForHost', async (item) => {
       const target = await pickTargetHost(item);
       if (!target) return;
       tunnelManager.stopTunnel(target);
       vscode.window.showInformationMessage(`Stopped SSH reverse tunnel for ${target}.`);
     }),
-    vscode.commands.registerCommand('antigravityOfflineSsh.clearCache', async () => {
+    vscode.commands.registerCommand('antigravityRemoteHelper.clearCache', async () => {
       const cacheRoot = path.join(context.globalStorageUri.fsPath, 'cache');
       const bytes = computeDirectorySizeBytes(cacheRoot);
       if (bytes === 0) {
-        vscode.window.showInformationMessage('Local Offline SSH cache is already empty.');
+        vscode.window.showInformationMessage('Local Remote Helper cache is already empty.');
         return;
       }
       const mb = (bytes / (1024 * 1024)).toFixed(1);
@@ -676,9 +676,9 @@ function activate(context) {
       if (confirm !== 'Clear Cache') return;
       fs.rmSync(cacheRoot, { recursive: true, force: true });
       log(`Cleared local cache (${mb} MB): ${cacheRoot}`);
-      vscode.window.showInformationMessage(`Cleared ${mb} MB of cached Offline SSH archives.`);
+      vscode.window.showInformationMessage(`Cleared ${mb} MB of cached Remote Helper archives.`);
     }),
-    vscode.commands.registerCommand('antigravityOfflineSsh.downloadCache', async () => {
+    vscode.commands.registerCommand('antigravityRemoteHelper.downloadCache', async () => {
       const settings = getSettings();
       const serverConfig = readServerConfigFromAppRoot(
         vscode.env.appRoot,
@@ -734,7 +734,7 @@ function activate(context) {
         vscode.window.showErrorMessage(`Download failed: ${msg}`);
       }
     }),
-    vscode.commands.registerCommand('antigravityOfflineSsh.openSshConfig', async () => {
+    vscode.commands.registerCommand('antigravityRemoteHelper.openSshConfig', async () => {
       const configPath = getEffectiveSshConfigPath();
       if (!fs.existsSync(configPath)) {
         fs.mkdirSync(path.dirname(configPath), { recursive: true });
@@ -743,10 +743,10 @@ function activate(context) {
       const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(configPath));
       await vscode.window.showTextDocument(doc, { preview: false });
     }),
-    vscode.commands.registerCommand('antigravityOfflineSsh.refreshHosts', () => {
+    vscode.commands.registerCommand('antigravityRemoteHelper.refreshHosts', () => {
       hostsProvider.refresh();
     }),
-    vscode.commands.registerCommand('antigravityOfflineSsh.showLog', () => {
+    vscode.commands.registerCommand('antigravityRemoteHelper.showLog', () => {
       output.show(true);
     })
   );

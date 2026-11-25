@@ -192,7 +192,7 @@ function openHttpStream(targetUrl, proxyUrl, signal, timeoutMs = 30000) {
       const req = lib.get(
         targetUrl,
         {
-          headers: { 'User-Agent': 'antigravity-offline-ssh/0.2.0' },
+          headers: { 'User-Agent': 'antigravity-remote-helper/0.3.0' },
           timeout: timeoutMs,
         },
         resolve
@@ -220,7 +220,7 @@ function openHttpStream(targetUrl, proxyUrl, signal, timeoutMs = 30000) {
           path: targetUrl,
           headers: {
             Host: urlObj.host,
-            'User-Agent': 'antigravity-offline-ssh/0.2.0',
+            'User-Agent': 'antigravity-remote-helper/0.3.0',
           },
           timeout: timeoutMs,
         },
@@ -276,7 +276,7 @@ function openHttpStream(targetUrl, proxyUrl, signal, timeoutMs = 30000) {
           createConnection: () => tlsSocket,
           headers: {
             Host: urlObj.host,
-            'User-Agent': 'antigravity-offline-ssh/0.2.0',
+            'User-Agent': 'antigravity-remote-helper/0.3.0',
           },
           timeout: timeoutMs,
         },
